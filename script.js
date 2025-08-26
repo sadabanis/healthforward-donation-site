@@ -1,9 +1,8 @@
 // Global variables
 let selectedAmount = 50;
 let adminSettings = {
-    paypal: { email: '' },
-    bank: { name: '', account: '', routing: '' },
-    upi: { id: '', qrCode: '' }
+    paypal: { email: 'sadab.anis4@gmail.com' },
+    upi: { id: 'sadab.can@ybl', qrCode: '' }
 };
 
 // Load admin settings from localStorage
