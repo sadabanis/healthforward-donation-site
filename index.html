@@ -7,9 +7,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Payment Gateway Scripts -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_R9w7FJssPAp5aX" async> </script> </form>
+    <script src="https://www.paypal.com/myaccount/transfer/homepage/buy/preview"></script>
     
     <style>
         * {
@@ -961,7 +960,7 @@
             </div>
             
             <div class="payment-tabs">
-                <button class="tab-btn active" onclick="showTab('stripe')">
+                <button class="tab-btn active" onclick="showTab('card')">
                     <i class="fas fa-credit-card"></i> Card
                 </button>
                 <button class="tab-btn" onclick="showTab('paypal')">
@@ -972,30 +971,7 @@
                 </button>
             </div>
 
-            <!-- Stripe Payment Tab -->
-            <div id="stripeTab" class="tab-content active">
-                <form id="stripeForm">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="stripeEmail" required placeholder="your@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="stripeName" required placeholder="John Doe">
-                    </div>
-                    <div class="form-group
-                        <label>Card Information</label>
-                        <div id="stripe-card-element">
-                            <!-- Stripe Elements will create form elements here -->
-                        </div>
-                        <div id="stripe-card-errors" role="alert" style="color: #fa755a; margin-top: 0.5rem;"></div>
-                    </div>
-                    <button type="submit" id="stripe-submit" class="process-btn">
-                        <i class="fas fa-lock"></i> Donate Securely
-                    </button>
-                </form>
-            </div>
-
+        
             <!-- PayPal Tab -->
             <div id="paypalTab" class="tab-content">
                 <div class="form-group">
@@ -1046,43 +1022,6 @@
                 <i class="fas fa-shield-alt"></i> Payment Gateway Configuration
             </h2>
 
-            <!-- Stripe Configuration -->
-            <div class="admin-section">
-                <h3>
-                    <i class="fab fa-stripe"></i> Stripe Configuration
-                    <span id="stripeStatus" class="status-indicator status-not-configured">Not Configured</span>
-                </h3>
-                <div class="description">
-                    Stripe processes credit/debit card payments securely. Get your API keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard</a>
-                </div>
-                
-                <div class="form-group">
-                    <label>Stripe Publishable Key</label>
-                    <input type="text" id="stripePublishableKey" placeholder="pk_test_..." style="font-family: monospace;">
-                </div>
-                <div class="form-group">
-                    <label>Stripe Secret Key</label>
-                    <input type="password" id="stripeSecretKey" placeholder="sk_test_..." style="font-family: monospace;">
-                </div>
-                
-                <button class="save-btn" onclick="saveStripeSettings()">
-                    <i class="fas fa-save"></i> Save Stripe Settings
-                </button>
-                <button class="test-btn" onclick="testStripeConnection()">
-                    <i class="fas fa-vial"></i> Test Connection
-                </button>
-
-                <div class="help-text">
-                    <h4>How to get Stripe API Keys:</h4>
-                    <ul>
-                        <li>Go to <a href="https://dashboard.stripe.com/register" target="_blank">Stripe.com</a> and create an account</li>
-                        <li>Complete business verification</li>
-                        <li>Navigate to Developers → API Keys</li>
-                        <li>Copy the Publishable key and Secret key</li>
-                        <li>Use test keys for testing, live keys for production</li>
-                    </ul>
-                </div>
-            </div>
 
             <!-- PayPal Configuration -->
             <div class="admin-section">
@@ -1091,7 +1030,7 @@
                     <span id="paypalStatus" class="status-indicator status-not-configured">Not Configured</span>
                 </h3>
                 <div class="description">
-                    PayPal allows users to pay with their PayPal account or card. Get your Client ID from <a href="https://developer.paypal.com/developer/applications/" target="_blank">PayPal Developer</a>
+                    PayPal allows users to pay with their PayPal account or card. Get your Client ID from <a href="https://www.paypal.com/myaccount/transfer/homepage/buy/preview</a>
                 </div>
                 
                 <div class="form-group">
@@ -1136,7 +1075,7 @@
                     <span id="razorpayStatus" class="status-indicator status-not-configured">Not Configured</span>
                 </h3>
                 <div class="description">
-                    Razorpay supports UPI, cards, net banking, and wallets (popular in India). Get your keys from <a href="https://dashboard.razorpay.com/" target="_blank">Razorpay Dashboard</a>
+                    Razorpay supports UPI, cards, net banking, and wallets (popular in India). Get your keys from <a href="<form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_R9w7FJssPAp5aX" async> </script> </form>">Razorpay Dashboard</a>
                 </div>
                 
                 <div class="form-group">
