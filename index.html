@@ -1917,3 +1917,138 @@
     </script>
 </body>
 </html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthForward - Donate for Global Health</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Payment Gateway Scripts -->
+    <script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_R9w7FJssPAp5aX" async> </script>
+    
+    <style>
+        /* ...existing styles... */
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                HealthForward
+            </div>
+            <button class="admin-btn" onclick="showAdminLogin()">
+                <i class="fas fa-cog"></i> Admin
+            </button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Invest in a Healthier Tomorrow</h1>
+            <p>Your donation today paves the way for groundbreaking health initiatives, medical research, and a brighter future for generations to come. Every contribution, big or small, makes a world of difference.</p>
+            <button class="donate-btn" onclick="openDonationModal()">
+                <i class="fas fa-heart"></i> Donate Now
+            </button>
+            <!-- Added Quick Donate button -->
+            <a href="https://rzp.io/rzp/ZULY5Mr1" target="_blank" class="donate-btn" style="display:inline-block; margin: 1rem 0;">
+                <i class="fas fa-credit-card"></i> Quick Donate via Razorpay
+            </a>
+        </div>
+    </section>
+
+    <!-- Impact Section (no change) -->
+    <section class="impact">
+        <h2>How Your Donation Helps</h2>
+        <div class="impact-grid">
+            <!-- ...impact cards... -->
+        </div>
+    </section>
+
+    <!-- Donation Options -->
+    <section class="donation-options">
+        <div class="donation-container">
+            <h2>Make a Difference Today</h2>
+            <div class="amount-buttons">
+                <button class="amount-btn" onclick="selectAmount(25)">$25</button>
+                <button class="amount-btn active" onclick="selectAmount(50)">$50</button>
+                <button class="amount-btn" onclick="selectAmount(100)">$100</button>
+                <button class="amount-btn" onclick="selectAmount(250)">$250</button>
+            </div>
+            <div class="custom-amount">
+                <input type="number" id="customAmount" placeholder="Other Amount ($)" min="1" onchange="selectCustomAmount()">
+            </div>
+            <button class="donate-btn" onclick="openDonationModal()">
+                <i class="fas fa-heart"></i> Donate Now
+            </button>
+            <!-- Added Quick Donate button -->
+            <a href="https://rzp.io/rzp/ZULY5Mr1" target="_blank" class="donate-btn" style="display:inline-block; margin: 1rem 0;">
+                <i class="fas fa-credit-card"></i> Quick Donate via Razorpay
+            </a>
+        </div>
+    </section>
+
+    <!-- Trust Section (no change) -->
+    <section class="trust">
+        <div class="trust-container">
+            <!-- ...trust content... -->
+        </div>
+    </section>
+
+    <!-- Footer (no change) -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms of Service</a>
+            <a href="#contact">Contact Us</a>
+        </div>
+        <p>© 2024 HealthForward. All rights reserved. Making the world healthier, one donation at a time.</p>
+    </footer>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDonationModal()">×</span>
+            <h2>Complete Your Donation</h2>
+            <div class="selected-amount" id="selectedAmountDisplay">
+                $50
+            </div>
+            
+            <!-- Quick Donate inside modal -->
+            <a href="https://rzp.io/rzp/ZULY5Mr1" target="_blank" class="donate-btn" style="display:inline-block; margin: 1rem 0;">
+                <i class="fas fa-credit-card"></i> Quick Donate via Razorpay
+            </a>
+            
+            <!-- Razorpay embedded payment form -->
+            <div style="margin: 2rem 0;">
+                <form>
+                    <script src="https://checkout.razorpay.com/v1/payment-button.js"
+                            data-payment_button_id="pl_R9w7FJssPAp5aX" async>
+                    </script>
+                </form>
+            </div>
+            
+            <div class="payment-tabs">
+                <!-- ...existing tab buttons if any... -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message (no change) -->
+    <div id="successMessage" class="success-message">
+        <!-- ...success message content... -->
+    </div>
+
+    <!-- Admin Panel (no change) -->
+    <div id="adminPanel" class="admin-panel">
+        <!-- ...admin panel content... -->
+    </div>
+</body>
+</html>
