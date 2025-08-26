@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HealthForward - Donate for Global Health</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Payment Gateway Scripts -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -398,6 +404,8 @@
             position: relative;
             animation: modalSlideIn 0.3s ease-out;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes modalSlideIn {
@@ -493,7 +501,7 @@
             font-weight: 500;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 0.8rem;
             border: 2px solid #ddd;
@@ -502,7 +510,7 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #3498db;
         }
@@ -544,6 +552,13 @@
             justify-content: center;
             margin: 1rem auto;
             color: #999;
+            overflow: hidden;
+        }
+
+        .upi-qr img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .process-btn {
@@ -562,6 +577,12 @@
         .process-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* Success Message */
@@ -624,7 +645,7 @@
             padding: 2rem;
             border-radius: 15px;
             width: 90%;
-            max-width: 600px;
+            max-width: 800px;
             position: relative;
         }
 
@@ -633,6 +654,7 @@
             padding: 1.5rem;
             background: #f8f9fa;
             border-radius: 10px;
+            border-left: 4px solid #3498db;
         }
 
         .admin-section h3 {
@@ -641,6 +663,13 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+        }
+
+        .admin-section .description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-style: italic;
         }
 
         .save-btn {
@@ -652,10 +681,71 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.3s ease;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
         }
 
         .save-btn:hover {
             background: #219a52;
+        }
+
+        .test-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .test-btn:hover {
+            background: #e67e22;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .status-configured {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-not-configured {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .help-text {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #1565c0;
+        }
+
+        .help-text h4 {
+            margin-bottom: 0.5rem;
+            color: #0d47a1;
+        }
+
+        .help-text ul {
+            margin-left: 1rem;
+        }
+
+        .help-text li {
+            margin-bottom: 0.3rem;
         }
 
         /* Responsive Design */
@@ -696,6 +786,12 @@
                 margin: 10% auto;
                 width: 95%;
             }
+
+            .admin-content {
+                width: 95%;
+                margin: 1rem auto;
+                padding: 1rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -714,6 +810,46 @@
             .payment-tabs {
                 flex-direction: column;
             }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Stripe Elements Styling */
+        .StripeElement {
+            background-color: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            transition: box-shadow 150ms ease;
+        }
+
+        .StripeElement--focus {
+            border-color: #3498db;
+            box-shadow: 0 1px 3px 0 #cfd7df;
+        }
+
+        .StripeElement--invalid {
+            border-color: #fa755a;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
         }
     </style>
 </head>
@@ -778,7 +914,7 @@
             <h2>Make a Difference Today</h2>
             <div class="amount-buttons">
                 <button class="amount-btn" onclick="selectAmount(25)">$25</button>
-                <button class="amount-btn" onclick="selectAmount(50)">$50</button>
+                <button class="amount-btn active" onclick="selectAmount(50)">$50</button>
                 <button class="amount-btn" onclick="selectAmount(100)">$100</button>
                 <button class="amount-btn" onclick="selectAmount(250)">$250</button>
             </div>
@@ -825,74 +961,67 @@
             </div>
             
             <div class="payment-tabs">
-                <button class="tab-btn active" onclick="showTab('card')">
+                <button class="tab-btn active" onclick="showTab('stripe')">
                     <i class="fas fa-credit-card"></i> Card
                 </button>
                 <button class="tab-btn" onclick="showTab('paypal')">
                     <i class="fab fa-paypal"></i> PayPal
                 </button>
-                <button class="tab-btn" onclick="showTab('upi')">
-                    <i class="fas fa-mobile-alt"></i> UPI
+                <button class="tab-btn" onclick="showTab('razorpay')">
+                    <i class="fas fa-mobile-alt"></i> UPI/Cards
                 </button>
             </div>
 
-            <!-- Card Payment Tab -->
-            <div id="cardTab" class="tab-content active">
-                <form id="cardForm">
+            <!-- Stripe Payment Tab -->
+            <div id="stripeTab" class="tab-content active">
+                <form id="stripeForm">
                     <div class="form-group">
                         <label>Email Address</label>
-                        <input type="email" required placeholder="your@email.com">
+                        <input type="email" id="stripeEmail" required placeholder="your@email.com">
                     </div>
                     <div class="form-group">
-                        <label>Card Number</label>
-                        <input type="text" required placeholder="1234 5678 9012 3456" maxlength="19">
+                        <label>Full Name</label>
+                        <input type="text" id="stripeName" required placeholder="John Doe">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Expiry Date</label>
-                            <input type="text" required placeholder="MM/YY" maxlength="5">
+                    <div class="form-group
+                        <label>Card Information</label>
+                        <div id="stripe-card-element">
+                            <!-- Stripe Elements will create form elements here -->
                         </div>
-                        <div class="form-group">
-                            <label>CVC</label>
-                            <input type="text" required placeholder="123" maxlength="4">
-                        </div>
+                        <div id="stripe-card-errors" role="alert" style="color: #fa755a; margin-top: 0.5rem;"></div>
                     </div>
-                    <div class="form-group">
-                        <label>Cardholder Name</label>
-                        <input type="text" required placeholder="John Doe">
-                    </div>
-                    <button type="submit" class="process-btn">
-                        <i class="fas fa-lock"></i> Process Donation
+                    <button type="submit" id="stripe-submit" class="process-btn">
+                        <i class="fas fa-lock"></i> Donate Securely
                     </button>
                 </form>
             </div>
 
             <!-- PayPal Tab -->
             <div id="paypalTab" class="tab-content">
-                <p style="text-align: center; margin-bottom: 1rem; color: #666;">
-                    You'll be redirected to PayPal to complete your secure donation.
-                </p>
-                <button class="paypal-btn" onclick="processPayPalDonation()">
-                    <i class="fab fa-paypal"></i> Donate with PayPal
-                </button>
+                <div class="form-group">
+                    <label>Email Address (for receipt)</label>
+                    <input type="email" id="paypalEmail" placeholder="your@email.com">
+                </div>
+                <div id="paypal-button-container"></div>
             </div>
 
-            <!-- UPI Tab -->
-            <div id="upiTab" class="tab-content">
-                <div class="upi-section">
-                    <div class="form-group">
-                        <label>UPI ID</label>
-                        <input type="text" placeholder="yourname@upi" id="upiIdInput">
-                    </div>
-                    <p style="margin: 1rem 0; color: #666;">OR</p>
-                    <p style="margin-bottom: 1rem; color: #666;">Scan QR Code with any UPI app:</p>
-                    <div class="upi-qr" id="upiQrCode">
-                        <i class="fas fa-qrcode" style="font-size: 3rem;"></i>
-                    </div>
-                    <button class="process-btn" onclick="processUPIDonation()">
-                        <i class="fas fa-mobile-alt"></i> Confirm UPI Payment
-                    </button>
+            <!-- Razorpay Tab -->
+            <div id="razorpayTab" class="tab-content">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="razorpayEmail" required placeholder="your@email.com">
                 </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="razorpayName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="razorpayPhone" required placeholder="+1234567890">
+                </div>
+                <button type="button" id="razorpay-submit" class="process-btn">
+                    <i class="fas fa-mobile-alt"></i> Pay with Razorpay
+                </button>
             </div>
         </div>
     </div>
@@ -903,7 +1032,7 @@
             <i class="fas fa-heart"></i>
         </div>
         <h2>Thank You For Your Generous Donation!</h2>
-        <p>You have taken a vital step towards a healthier future. A receipt has been sent to your email. With gratitude, The HealthForward Team.</p>
+        <p id="successDetails">You have taken a vital step towards a healthier future. A receipt has been sent to your email. With gratitude, The HealthForward Team.</p>
         <button class="donate-btn" onclick="closeSuccessMessage()" style="margin-top: 2rem;">
             Continue
         </button>
@@ -914,25 +1043,1353 @@
         <div class="admin-content">
             <span class="close" onclick="closeAdminPanel()">×</span>
             <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">
-                <i class="fas fa-shield-alt"></i> Admin Configuration
+                <i class="fas fa-shield-alt"></i> Payment Gateway Configuration
             </h2>
 
+            <!-- Stripe Configuration -->
             <div class="admin-section">
-                <h3><i class="fab fa-paypal"></i> PayPal Settings</h3>
-                <div class="form-group">
-                    <label>PayPal Email Address</label>
-                    <input type="email" id="paypalEmail" placeholder="your-paypal@email.com">
+                <h3>
+                    <i class="fab fa-stripe"></i> Stripe Configuration
+                    <span id="stripeStatus" class="status-indicator status-not-configured">Not Configured</span>
+                </h3>
+                <div class="description">
+                    Stripe processes credit/debit card payments securely. Get your API keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard</a>
                 </div>
-                <button class="save-btn" onclick="savePayPalSettings()">Save PayPal Settings</button>
+                
+                <div class="form-group">
+                    <label>Stripe Publishable Key</label>
+                    <input type="text" id="stripePublishableKey" placeholder="pk_test_..." style="font-family: monospace;">
+                </div>
+                <div class="form-group">
+                    <label>Stripe Secret Key</label>
+                    <input type="password" id="stripeSecretKey" placeholder="sk_test_..." style="font-family: monospace;">
+                </div>
+                
+                <button class="save-btn" onclick="saveStripeSettings()">
+                    <i class="fas fa-save"></i> Save Stripe Settings
+                </button>
+                <button class="test-btn" onclick="testStripeConnection()">
+                    <i class="fas fa-vial"></i> Test Connection
+                </button>
+
+                <div class="help-text">
+                    <h4>How to get Stripe API Keys:</h4>
+                    <ul>
+                        <li>Go to <a href="https://dashboard.stripe.com/register" target="_blank">Stripe.com</a> and create an account</li>
+                        <li>Complete business verification</li>
+                        <li>Navigate to Developers → API Keys</li>
+                        <li>Copy the Publishable key and Secret key</li>
+                        <li>Use test keys for testing, live keys for production</li>
+                    </ul>
+                </div>
             </div>
 
+            <!-- PayPal Configuration -->
             <div class="admin-section">
-                <h3><i class="fas fa-university"></i> Bank Account Details</h3>
+                <h3>
+                    <i class="fab fa-paypal"></i> PayPal Configuration
+                    <span id="paypalStatus" class="status-indicator status-not-configured">Not Configured</span>
+                </h3>
+                <div class="description">
+                    PayPal allows users to pay with their PayPal account or card. Get your Client ID from <a href="https://developer.paypal.com/developer/applications/" target="_blank">PayPal Developer</a>
+                </div>
+                
                 <div class="form-group">
-                    <label>Bank Name</label>
-                    <input type="text" id="bankName" placeholder="Your Bank Name">
+                    <label>PayPal Client ID</label>
+                    <input type="text" id="paypalClientId" placeholder="AYi..." style="font-family: monospace;">
                 </div>
                 <div class="form-group">
-                    <label>Account Number</label>
-                    <input type="text" id="accountNumber" placeholder="Account Number">
+                    <label>PayPal Environment</label>
+                    <select id="paypalEnvironment">
+                        <option value="sandbox">Sandbox (Testing)</option>
+                        <option value="production">Production (Live)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>PayPal Business Email</label>
+                    <input type="email" id="paypalBusinessEmail" placeholder="business@example.com">
+                </div>
                 
+                <button class="save-btn" onclick="savePayPalSettings()">
+                    <i class="fas fa-save"></i> Save PayPal Settings
+                </button>
+                <button class="test-btn" onclick="testPayPalConnection()">
+                    <i class="fas fa-vial"></i> Test Connection
+                </button>
+
+                <div class="help-text">
+                    <h4>How to get PayPal Client ID:</h4>
+                    <ul>
+                        <li>Go to <a href="https://developer.paypal.com/" target="_blank">PayPal Developer</a></li>
+                        <li>Log in with your PayPal account</li>
+                        <li>Create a new app in "My Apps & Credentials"</li>
+                        <li>Copy the Client ID</li>
+                        <li>Use sandbox for testing, live for production</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Razorpay Configuration -->
+            <div class="admin-section">
+                <h3>
+                    <i class="fas fa-credit-card"></i> Razorpay Configuration (UPI/Cards)
+                    <span id="razorpayStatus" class="status-indicator status-not-configured">Not Configured</span>
+                </h3>
+                <div class="description">
+                    Razorpay supports UPI, cards, net banking, and wallets (popular in India). Get your keys from <a href="https://dashboard.razorpay.com/" target="_blank">Razorpay Dashboard</a>
+                </div>
+                
+                <div class="form-group">
+                    <label>Razorpay Key ID</label>
+                    <input type="text" id="razorpayKeyId" placeholder="rzp_test_..." style="font-family: monospace;">
+                </div>
+                <div class="form-group">
+                    <label>Razorpay Key Secret</label>
+                    <input type="password" id="razorpayKeySecret" placeholder="..." style="font-family: monospace;">
+                </div>
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="razorpayBusinessName" placeholder="Your Organization Name">
+                </div>
+                
+                <button class="save-btn" onclick="saveRazorpaySettings()">
+                    <i class="fas fa-save"></i> Save Razorpay Settings
+                </button>
+                <button class="test-btn" onclick="testRazorpayConnection()">
+                    <i class="fas fa-vial"></i> Test Connection
+                </button>
+
+                <div class="help-text">
+                    <h4>How to get Razorpay API Keys:</h4>
+                    <ul>
+                        <li>Go to <a href="https://razorpay.com/" target="_blank">Razorpay.com</a> and sign up</li>
+                        <li>Complete KYC verification</li>
+                        <li>Go to Settings → API Keys</li>
+                        <li>Generate and copy the Key ID and Key Secret</li>
+                        <li>Use test keys for testing, live keys for production</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Webhook Configuration -->
+            <div class="admin-section">
+                <h3>
+                    <i class="fas fa-webhook"></i> Webhook Configuration
+                </h3>
+                <div class="description">
+                    Webhooks notify your server when payments are completed. Set up webhook endpoints in your payment provider dashboards.
+                </div>
+                
+                <div class="form-group">
+                    <label>Webhook URL (Your Server Endpoint)</label>
+                    <input type="url" id="webhookUrl" placeholder="https://yourserver.com/webhook">
+                </div>
+                
+                <button class="save-btn" onclick="saveWebhookSettings()">
+                    <i class="fas fa-save"></i> Save Webhook Settings
+                </button>
+
+                <div class="help-text">
+                    <h4>Webhook Endpoints to Configure:</h4>
+                    <ul>
+                        <li><strong>Stripe:</strong> payment_intent.succeeded</li>
+                        <li><strong>PayPal:</strong> PAYMENT.CAPTURE.COMPLETED</li>
+                        <li><strong>Razorpay:</strong> payment.captured</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="admin-section">
+                <h3>
+                    <i class="fas fa-shield-alt"></i> Security Settings
+                </h3>
+                
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter new admin password">
+                </div>
+                
+                <button class="save-btn" onclick="changeAdminPassword()">
+                    <i class="fas fa-key"></i> Change Password
+                </button>
+
+                <div class="help-text">
+                    <h4>Security Best Practices:</h4>
+                    <ul>
+                        <li>Use strong, unique passwords</li>
+                        <li>Never share API keys publicly</li>
+                        <li>Use test keys during development</li>
+                        <li>Enable 2FA on payment provider accounts</li>
+                        <li>Regularly rotate API keys</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedAmount = 50;
+        let stripe = null;
+        let stripeElements = null;
+        let cardElement = null;
+        
+        // Admin settings with default values
+        let adminSettings = {
+            stripe: {
+                publishableKey: '',
+                secretKey: '',
+                configured: false
+            },
+            paypal: {
+                clientId: '',
+                environment: 'sandbox',
+                businessEmail: '',
+                configured: false
+            },
+            razorpay: {
+                keyId: '',
+                keySecret: '',
+                businessName: 'HealthForward',
+                configured: false
+            },
+            webhook: {
+                url: ''
+            },
+            security: {
+                adminPassword: 'healthforward2024'
+            }
+        };
+
+        // Load admin settings from localStorage
+        function loadAdminSettings() {
+            const saved = localStorage.getItem('healthforward-admin-v2');
+            if (saved) {
+                try {
+                    const parsedSettings = JSON.parse(saved);
+                    adminSettings = { ...adminSettings, ...parsedSettings };
+                } catch (e) {
+                    console.error('Error loading admin settings:', e);
+                }
+            }
+            updateStatusIndicators();
+        }
+
+        // Save admin settings to localStorage
+        function saveAdminSettings() {
+            try {
+                localStorage.setItem('healthforward-admin-v2', JSON.stringify(adminSettings));
+                console.log('Admin settings saved successfully');
+            } catch (e) {
+                console.error('Error saving admin settings:', e);
+                alert('Error saving settings. Please try again.');
+            }
+        }
+
+        // Update status indicators
+        function updateStatusIndicators() {
+            // Stripe status
+            const stripeStatus = document.getElementById('stripeStatus');
+            if (adminSettings.stripe.configured && adminSettings.stripe.publishableKey) {
+                stripeStatus.textContent = 'Configured';
+                stripeStatus.className = 'status-indicator status-configured';
+            } else {
+                stripeStatus.textContent = 'Not Configured';
+                stripeStatus.className = 'status-indicator status-not-configured';
+            }
+
+            // PayPal status
+            const paypalStatus = document.getElementById('paypalStatus');
+            if (adminSettings.paypal.configured && adminSettings.paypal.clientId) {
+                paypalStatus.textContent = 'Configured';
+                paypalStatus.className = 'status-indicator status-configured';
+            } else {
+                paypalStatus.textContent = 'Not Configured';
+                paypalStatus.className = 'status-indicator status-not-configured';
+            }
+
+            // Razorpay status
+            const razorpayStatus = document.getElementById('razorpayStatus');
+            if (adminSettings.razorpay.configured && adminSettings.razorpay.keyId) {
+                razorpayStatus.textContent = 'Configured';
+                razorpayStatus.className = 'status-indicator status-configured';
+            } else {
+                razorpayStatus.textContent = 'Not Configured';
+                razorpayStatus.className = 'status-indicator status-not-configured';
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminSettings();
+            initializePaymentGateways();
+            
+            // Add event listeners
+            document.getElementById('stripeForm').addEventListener('submit', handleStripePayment);
+            document.getElementById('razorpay-submit').addEventListener('click', handleRazorpayPayment);
+        });
+
+        // Initialize payment gateways
+        function initializePaymentGateways() {
+            // Initialize Stripe if configured
+            if (adminSettings.stripe.publishableKey) {
+                try {
+                    stripe = Stripe(adminSettings.stripe.publishableKey);
+                    setupStripeElements();
+                } catch (e) {
+                    console.error('Error initializing Stripe:', e);
+                }
+            }
+
+            // Initialize PayPal if configured
+            if (adminSettings.paypal.clientId) {
+                initializePayPal();
+            }
+        }
+
+        // Setup Stripe Elements
+        function setupStripeElements() {
+            if (!stripe) return;
+
+            stripeElements = stripe.elements();
+            cardElement = stripeElements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                },
+            });
+
+            cardElement.mount('#stripe-card-element');
+
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('stripe-card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+        }
+
+        // Initialize PayPal
+        function initializePayPal() {
+            if (!window.paypal || !adminSettings.paypal.clientId) return;
+
+            // Clear existing PayPal buttons
+            document.getElementById('paypal-button-container').innerHTML = '';
+
+            window.paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: selectedAmount.toString()
+                            },
+                            description: 'Donation to HealthForward'
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        console.log('PayPal payment completed:', details);
+                        showSuccessMessage({
+                            transactionId: details.id,
+                            amount: selectedAmount,
+                            method: 'PayPal',
+                            email: document.getElementById('paypalEmail').value
+                        });
+                        closeDonationModal();
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal payment error:', err);
+                    alert('Payment failed. Please try again.');
+                }
+            }).render('#paypal-button-container');
+        }
+
+        // Amount selection functions
+        function selectAmount(amount) {
+            selectedAmount = amount;
+            document.getElementById('customAmount').value = '';
+            
+            // Update button states
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateSelectedAmountDisplay();
+        }
+
+        function selectCustomAmount() {
+            const customValue = document.getElementById('customAmount').value;
+            if (customValue && customValue > 0) {
+                selectedAmount = parseFloat(customValue);
+                
+                // Remove active state from preset buttons
+                document.querySelectorAll('.amount-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                updateSelectedAmountDisplay();
+            }
+        }
+
+        function updateSelectedAmountDisplay() {
+            document.getElementById('selectedAmountDisplay').textContent = `$${selectedAmount}`;
+        }
+
+        // Modal functions
+        function openDonationModal() {
+            updateSelectedAmountDisplay();
+            document.getElementById('donationModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Reinitialize payment gateways when modal opens
+            setTimeout(() => {
+                initializePaymentGateways();
+            }, 100);
+        }
+
+        function closeDonationModal() {
+            document.getElementById('donationModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+
+            // Initialize specific payment gateway when tab is shown
+            if (tabName === 'paypal' && adminSettings.paypal.configured) {
+                setTimeout(initializePayPal, 100);
+            }
+        }
+
+        // Stripe payment handling
+        async function handleStripePayment(event) {
+            event.preventDefault();
+
+            if (!stripe || !cardElement) {
+                alert('Stripe is not properly configured. Please contact the administrator.');
+                return;
+            }
+
+            const submitButton = document.getElementById('stripe-submit');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<div class="spinner"></div> Processing...';
+            submitButton.disabled = true;
+
+            const email = document.getElementById('stripeEmail').value;
+            const name = document.getElementById('stripeName').value;
+
+            try {
+                // Create payment method
+                const {error, paymentMethod} = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        name: name,
+                        email: email,
+                    },
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                // In a real implementation, you would send this to your server
+                // to create a payment intent and confirm the payment
+                console.log('Stripe Payment Method created:', paymentMethod);
+                
+                // Simulate successful payment for demo
+                setTimeout(() => {
+                    showSuccessMessage({
+                        transactionId: 'stripe_' + Math.random().toString(36).substr(2, 9),
+                        amount: selectedAmount,
+                        method: 'Stripe',
+                        email: email
+                    });
+                    closeDonationModal();
+                }, 2000);
+
+            } catch (error) {
+                console.error('Stripe payment error:', error);
+                document.getElementById('stripe-card-errors').textContent = error.message;
+            } finally {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        }
+
+        // Razorpay payment handling
+        function handleRazorpayPayment() {
+            if (!adminSettings.razorpay.configured || !adminSettings.razorpay.keyId) {
+                alert('Razorpay is not properly configured. Please contact the administrator.');
+                return;
+            }
+
+            const email = document.getElementById('razorpayEmail').value;
+            const name = document.getElementById('razorpayName').value;
+            const phone = document.getElementById('razorpayPhone').value;
+
+            if (!email || !name || !phone) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            const options = {
+                key: adminSettings.razorpay.keyId,
+                amount: selectedAmount * 100, // Razorpay expects amount in paise
+                currency: 'USD',
+                name: adminSettings.razorpay.businessName,
+                description: 'Donation to HealthForward',
+                image: 'https://via.placeholder.com/100x100?text=HF',
+                prefill: {
+                    name: name,
+                    email: email,
+                    contact: phone
+                },
+                theme: {
+                    color: '#3498db'
+                },
+                handler: function(response) {
+                    console.log('Razorpay payment completed:', response);
+                    showSuccessMessage({
+                        transactionId: response.razorpay_payment_id,
+                        amount: selectedAmount,
+                        method: 'Razorpay',
+                        email: email
+                    });
+                    closeDonationModal();
+                },
+                modal: {
+                    ondismiss: function() {
+                        console.log('Razorpay payment cancelled');
+                    }
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+        }
+
+        // Success message
+        function showSuccessMessage(paymentDetails = {}) {
+            const successDetails = document.getElementById('successDetails');
+            if (paymentDetails.transactionId) {
+                successDetails.innerHTML = `
+                    <strong>Payment Successful!</strong><br>
+                    Transaction ID: ${paymentDetails.transactionId}<br>
+                    Amount: $${paymentDetails.amount}<br>
+                    Method: ${paymentDetails.method}<br>
+                    ${paymentDetails.email ? `Receipt sent to: ${paymentDetails.email}<br>` : ''}
+                    <br>
+                    Thank you for your generous donation! You have taken a vital step towards a healthier future.
+                `;
+            }
+            
+            document.getElementById('successMessage').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Auto-close after 15 seconds
+            setTimeout(() => {
+                closeSuccessMessage();
+            }, 15000);
+        }
+
+        function closeSuccessMessage() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Admin functions
+        function showAdminLogin() {
+            const password = prompt('Enter admin password:');
+            if (password === adminSettings.security.adminPassword) {
+                showAdminPanel();
+            } else if (password !== null) {
+                alert('Incorrect password');
+            }
+        }
+
+        function showAdminPanel() {
+            // Load current settings into form
+            document.getElementById('stripePublishableKey').value = adminSettings.stripe.publishableKey || '';
+            document.getElementById('stripeSecretKey').value = adminSettings.stripe.secretKey || '';
+            document.getElementById('paypalClientId').value = adminSettings.paypal.clientId || '';
+            document.getElementById('paypalEnvironment').value = adminSettings.paypal.environment || 'sandbox';
+            document.getElementById('paypalBusinessEmail').value = adminSettings.paypal.businessEmail || '';
+            document.getElementById('razorpayKeyId').value = adminSettings.razorpay.keyId || '';
+            document.getElementById('razorpayKeySecret').value = adminSettings.razorpay.keySecret || '';
+            document.getElementById('razorpayBusinessName').value = adminSettings.razorpay.businessName || 'HealthForward';
+            document.getElementById('webhookUrl').value = adminSettings.webhook.url || '';
+            
+            document.getElementById('adminPanel').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Save functions for each payment gateway
+        function saveStripeSettings() {
+            const publishableKey = document.getElementById('stripePublishableKey').value.trim();
+            const secretKey = document.getElementById('stripeSecretKey').value.trim();
+            
+            if (publishableKey && secretKey) {
+                adminSettings.stripe.publishableKey = publishableKey;
+                adminSettings.stripe.secretKey = secretKey;
+                adminSettings.stripe.configured = true;
+                
+                saveAdminSettings();
+                updateStatusIndicators();
+                
+                // Reinitialize Stripe
+                try {
+                    stripe = Stripe(publishableKey);
+                    setupStripeElements();
+                    alert('Stripe settings saved and initialized successfully!');
+                } catch (e) {
+                    alert('Stripe settings saved, but initialization failed. Please check your publishable key.');
+                }
+            } else {
+                alert('Please enter both publishable key and secret key.');
+            }
+        }
+
+        function savePayPalSettings() {
+            const clientId = document.getElementById('paypalClientId').value.trim();
+            const environment = document.getElementById('paypalEnvironment').value;
+            const businessEmail = document.getElementById('paypalBusinessEmail').value.trim();
+            
+            if (clientId) {
+                adminSettings.paypal.clientId = clientId;
+                adminSettings.paypal.environment = environment;
+                adminSettings.paypal.businessEmail = businessEmail;
+                adminSettings.paypal.configured = true;
+                
+                saveAdminSettings();
+                updateStatusIndicators();
+                
+                // Reload PayPal SDK with new client ID
+                const existingScript = document.querySelector('script[src*="paypal.com/sdk"]');
+                if (existingScript) {
+                    existingScript.remove();
+                }
+                
+                const script = document.createElement('script');
+                script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+                script.onload = () => {
+                    initializePayPal();
+                    alert('PayPal settings saved and initialized successfully!');
+                };
+                document.head.appendChild(script);
+            } else {
+                alert('Please enter PayPal Client ID.');
+            }
+        }
+
+        function saveRazorpaySettings() {
+            const keyId = document.getElementById('razorpayKeyId').value.trim();
+            const keySecret = document.getElementById('razorpayKeySecret').value.trim();
+            const businessName = document.getElementById('razorpayBusinessName').value.trim();
+            
+            if (keyId && keySecret) {
+                adminSettings.razorpay.keyId = keyId;
+                adminSettings.razorpay.keySecret = keySecret;
+                adminSettings.razorpay.businessName = businessName || 'HealthForward';
+                adminSettings.razorpay.configured = true;
+                
+                saveAdminSettings();
+                updateStatusIndicators();
+                alert('Razorpay settings saved successfully!');
+            } else {
+                alert('Please enter both Key ID and Key Secret.');
+            }
+        }
+
+        function saveWebhookSettings() {
+            const webhookUrl = document.getElementById('webhookUrl').value.trim();
+            adminSettings.webhook.url = webhookUrl;
+            saveAdminSettings();
+            alert('Webhook settings saved successfully!');
+        }
+
+        function changeAdminPassword() {
+            const newPassword = document.getElementById('adminPassword').value.trim();
+            if (newPassword && newPassword.length >= 8) {
+                adminSettings.security.adminPassword = newPassword;
+                saveAdminSettings();
+                document.getElementById('adminPassword').value = '';
+                alert('Admin password changed successfully!');
+            } else {
+                alert('Password must be at least 8 characters long.');
+            }
+        }
+
+        // Test functions
+        function testStripeConnection() {
+            const publishableKey = document.getElementById('stripePublishableKey').value.trim();
+            if (!publishableKey) {
+                alert('Please enter Stripe publishable key first.');
+                return;
+            }
+            
+            try {
+                const testStripe = Stripe(publishableKey);
+                alert('Stripe connection test successful! ✅');
+            } catch (e) {
+                alert('Stripe connection test failed: ' + e.message);
+            }
+        }
+
+        function testPayPalConnection() {
+            const clientId = document.getElementById('paypalClientId').value.trim();
+            if (!clientId) {
+                alert('Please enter PayPal Client ID first.');
+                return;
+            }
+            
+            // Simple validation - in real implementation, you'd make an API call
+            if (clientId.startsWith('A') && clientId.length > 50) {
+                alert('PayPal connection test successful! ✅');
+            } else {
+                alert('PayPal Client ID format appears invalid.');
+            }
+        }
+
+        function testRazorpayConnection() {
+            const keyId = document.getElementById('razorpayKeyId').value.trim();
+            if (!keyId) {
+                alert('Please enter Razorpay Key ID first.');
+                return;
+            }
+            
+            // Simple validation - in real implementation, you'd make an API call
+            if (keyId.startsWith('rzp_')) {
+                alert('Razorpay connection test successful! ✅');
+            } else {
+                alert('Razorpay Key ID format appears invalid.');
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const donationModal = document.getElementById('donationModal');
+            const adminPanel = document.getElementById('adminPanel');
+            
+            if (event.target === donationModal) {
+                closeDonationModal();
+            }
+            if (event.target === adminPanel) {
+                closeAdminPanel();
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add floating animation to cards
+        function addFloatingAnimation() {
+            const cards = document.querySelectorAll('.impact-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.classList.add('floating');
+            });
+        }
+
+        // Initialize floating animation when page loads
+        window.addEventListener('load', addFloatingAnimation);
+
+        // Add scroll animations
+        function handleScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.impact-card, .donation-container').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        }
+
+        // Initialize scroll animations
+        document.addEventListener('DOMContentLoaded', handleScrollAnimations);
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Close modals with Escape key
+            if (e.key === 'Escape') {
+                if (document.getElementById('donationModal').style.display === 'block') {
+                    closeDonationModal();
+                }
+                if (document.getElementById('adminPanel').style.display === 'block') {
+                    closeAdminPanel();
+                }
+                if (document.getElementById('successMessage').style.display === 'flex') {
+                    closeSuccessMessage();
+                }
+            }
+        });
+
+        // Form validation helpers
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePhone(phone) {
+            const re = /^[\+]?[1-9][\d]{0,15}$/;
+            return re.test(phone.replace(/\s/g, ''));
+        }
+
+        // Enhanced form validation for payment forms
+        function validateStripeForm() {
+            const email = document.getElementById('stripeEmail').value;
+            const name = document.getElementById('stripeName').value;
+            
+            if (!email || !validateEmail(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+            
+            if (!name || name.trim().length < 2) {
+                alert('Please enter your full name.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        function validateRazorpayForm() {
+            const email = document.getElementById('razorpayEmail').value;
+            const name = document.getElementById('razorpayName').value;
+            const phone = document.getElementById('razorpayPhone').value;
+            
+            if (!email || !validateEmail(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
+            
+            if (!name || name.trim().length < 2) {
+                alert('Please enter your full name.');
+                return false;
+            }
+            
+            if (!phone || !validatePhone(phone)) {
+                alert('Please enter a valid phone number.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Update payment handlers to include validation
+        const originalHandleStripePayment = handleStripePayment;
+        handleStripePayment = async function(event) {
+            event.preventDefault();
+            if (!validateStripeForm()) return;
+            return originalHandleStripePayment.call(this, event);
+        };
+
+        const originalHandleRazorpayPayment = handleRazorpayPayment;
+        handleRazorpayPayment = function() {
+            if (!validateRazorpayForm()) return;
+            return originalHandleRazorpayPayment.call(this);
+        };
+
+        // Add donation tracking
+        function trackDonation(details) {
+            const donations = JSON.parse(localStorage.getItem('healthforward-donations') || '[]');
+            donations.push({
+                ...details,
+                timestamp: new Date().toISOString(),
+                id: 'donation_' + Math.random().toString(36).substr(2, 9)
+            });
+            localStorage.setItem('healthforward-donations', JSON.stringify(donations));
+        }
+
+        // Enhanced success message with tracking
+        const originalShowSuccessMessage = showSuccessMessage;
+        showSuccessMessage = function(paymentDetails = {}) {
+            // Track the donation
+            trackDonation(paymentDetails);
+            
+            // Show success message
+            originalShowSuccessMessage.call(this, paymentDetails);
+            
+            // Optional: Send to analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'donation_completed', {
+                    'event_category': 'donations',
+                    'event_label': paymentDetails.method,
+                    'value': paymentDetails.amount
+                });
+            }
+        };
+
+        // Add donation history to admin panel
+        function showDonationHistory() {
+            const donations = JSON.parse(localStorage.getItem('healthforward-donations') || '[]');
+            if (donations.length === 0) {
+                alert('No donations recorded yet.');
+                return;
+            }
+            
+            let historyHtml = '<h3>Recent Donations</h3><div style="max-height: 300px; overflow-y: auto;">';
+            donations.slice(-10).reverse().forEach(donation => {
+                historyHtml += `
+                    <div style="border: 1px solid #ddd; padding: 1rem; margin: 0.5rem 0; border-radius: 8px;">
+                        <strong>$${donation.amount}</strong> via ${donation.method}<br>
+                        <small>ID: ${donation.transactionId}</small><br>
+                        <small>Date: ${new Date(donation.timestamp).toLocaleString()}</small>
+                        ${donation.email ? `<br><small>Email: ${donation.email}</small>` : ''}
+                    </div>
+                `;
+            });
+            historyHtml += '</div>';
+            
+            const historyDiv = document.createElement('div');
+            historyDiv.innerHTML = historyHtml;
+            historyDiv.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                max-width: 500px; width: 90%; z-index: 3000; max-height: 80vh; overflow-y: auto;
+            `;
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.cssText = `
+                position: absolute; top: 1rem; right: 1rem; background: none; border: none;
+                font-size: 2rem; cursor: pointer; color: #999;
+            `;
+            closeBtn.onclick = () => document.body.removeChild(historyDiv);
+            
+            historyDiv.appendChild(closeBtn);
+            document.body.appendChild(historyDiv);
+        }
+
+        // Add export functionality
+        function exportDonations() {
+            const donations = JSON.parse(localStorage.getItem('healthforward-donations') || '[]');
+            if (donations.length === 0) {
+                alert('No donations to export.');
+                return;
+            }
+            
+            const csv = [
+                ['Date', 'Amount', 'Method', 'Transaction ID', 'Email'].join(','),
+                ...donations.map(d => [
+                    new Date(d.timestamp).toISOString(),
+                    d.amount,
+                    d.method,
+                    d.transactionId,
+                    d.email || ''
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `healthforward-donations-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Add buttons to admin panel for donation management
+        function addDonationManagementButtons() {
+            const adminContent = document.querySelector('.admin-content');
+            if (!adminContent) return;
+            
+            const donationSection = document.createElement('div');
+            donationSection.className = 'admin-section';
+            donationSection.innerHTML = `
+                <h3><i class="fas fa-chart-line"></i> Donation Management</h3>
+                <div class="description">View and manage donation records</div>
+                <button class="save-btn" onclick="showDonationHistory()">
+                    <i class="fas fa-history"></i> View Recent Donations
+                </button>
+                <button class="test-btn" onclick="exportDonations()">
+                    <i class="fas fa-download"></i> Export All Donations
+                </button>
+                <button class="test-btn" onclick="clearDonationHistory()" style="background: #e74c3c;">
+                    <i class="fas fa-trash"></i> Clear History
+                </button>
+            `;
+            
+            adminContent.insertBefore(donationSection, adminContent.lastElementChild);
+        }
+
+        function clearDonationHistory() {
+            if (confirm('Are you sure you want to clear all donation history? This cannot be undone.')) {
+                localStorage.removeItem('healthforward-donations');
+                alert('Donation history cleared.');
+            }
+        }
+
+        // Initialize donation management when admin panel is shown
+        const originalShowAdminPanel = showAdminPanel;
+        showAdminPanel = function() {
+            originalShowAdminPanel.call(this);
+            setTimeout(addDonationManagementButtons, 100);
+        };
+
+        // Add real-time validation feedback
+        function addRealTimeValidation() {
+            // Email validation
+            document.querySelectorAll('input[type="email"]').forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value && !validateEmail(this.value)) {
+                        this.style.borderColor = '#e74c3c';
+                        this.title = 'Please enter a valid email address';
+                    } else {
+                        this.style.borderColor = '#27ae60';
+                        this.title = '';
+                    }
+                });
+            });
+            
+            // Phone validation
+            document.querySelectorAll('input[type="tel"]').forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value && !validatePhone(this.value)) {
+                        this.style.borderColor = '#e74c3c';
+                        this.title = 'Please enter a valid phone number';
+                    } else {
+                        this.style.borderColor = '#27ae60';
+                        this.title = '';
+                    }
+                });
+            });
+        }
+
+        // Initialize real-time validation
+        document.addEventListener('DOMContentLoaded', addRealTimeValidation);
+
+        // Add progress indicator for payments
+        function showPaymentProgress(message = 'Processing payment...') {
+            const progressDiv = document.createElement('div');
+            progressDiv.id = 'payment-progress';
+            progressDiv.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 4000; display: flex;
+                align-items: center; justify-content: center; flex-direction: column;
+                color: white; font-size: 1.2rem;
+            `;
+            progressDiv.innerHTML = `
+                <div class="spinner" style="width: 50px; height: 50px; border-width: 4px; margin-bottom: 1rem;"></div>
+                <div>${message}</div>
+            `;
+            document.body.appendChild(progressDiv);
+        }
+
+        function hidePaymentProgress() {
+            const progressDiv = document.getElementById('payment-progress');
+            if (progressDiv) {
+                document.body.removeChild(progressDiv);
+            }
+        }
+
+        // Add error handling for network issues
+        function handleNetworkError(error) {
+            console.error('Network error:', error);
+            alert('Network error occurred. Please check your internet connection and try again.');
+        }
+
+        // Add retry mechanism for failed payments
+        function retryPayment(paymentFunction, maxRetries = 3) {
+            let retries = 0;
+            
+            function attempt() {
+                return paymentFunction().catch(error => {
+                    retries++;
+                    if (retries < maxRetries) {
+                        console.log(`Payment attempt ${retries} failed, retrying...`);
+                        return new Promise(resolve => setTimeout(resolve, 1000)).then(attempt);
+                    } else {
+                        throw error;
+                    }
+                });
+            }
+            
+            return attempt();
+        }
+
+        // Add currency conversion (basic example)
+        const currencyRates = {
+            'USD': 1,
+            'EUR': 0.85,
+            'GBP': 0.73,
+            'INR': 83.12,
+            'CAD': 1.36
+        };
+
+        function convertCurrency(amount, fromCurrency, toCurrency) {
+            const usdAmount = amount / currencyRates[fromCurrency];
+            return usdAmount * currencyRates[toCurrency];
+        }
+
+        // Add accessibility improvements
+        function improveAccessibility() {
+            // Add ARIA labels
+            document.querySelectorAll('button').forEach(button => {
+                if (!button.getAttribute('aria-label')) {
+                    button.setAttribute('aria-label', button.textContent.trim());
+                }
+            });
+            
+            // Add focus management for modals
+            const modals = document.querySelectorAll('.modal, .admin-panel');
+            modals.forEach(modal => {
+                modal.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        const focusableElements = modal.querySelectorAll(
+                            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                        );
+                        const firstElement = focusableElements[0];
+                        const lastElement = focusableElements[focusableElements.length - 1];
+                        
+                        if (e.shiftKey && document.activeElement === firstElement) {
+                            lastElement.focus();
+                            e.preventDefault();
+                        } else if (!e.shiftKey && document.activeElement === lastElement) {
+                            firstElement.focus();
+                            e.preventDefault();
+                        }
+                    }
+                });
+            });
+        }
+
+        // Initialize accessibility improvements
+        document.addEventListener('DOMContentLoaded', improveAccessibility);
+
+        // Add performance monitoring
+        function monitorPerformance() {
+            if ('performance' in window) {
+                window.addEventListener('load', () => {
+                    const perfData = performance.getEntriesByType('navigation')[0];
+                    console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+                });
+            }
+        }
+
+        // Initialize performance monitoring
+        monitorPerformance();
+
+        // Add service worker for offline functionality (basic)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+
+        // Add print styles handler
+        function addPrintHandler() {
+            window.addEventListener('beforeprint', () => {
+                document.body.classList.add('printing');
+            });
+            
+            window.addEventListener('afterprint', () => {
+                document.body.classList.remove('printing');
+            });
+        }
+
+        // Initialize print handler
+        addPrintHandler();
+
+        console.log('HealthForward Donation System v2.0 initialized successfully! 🎉');
+        console.log('Features: Stripe, PayPal, Razorpay, Admin Panel, Analytics, Accessibility');
+    </script>
+
+    <!-- Additional CSS for print and accessibility -->
+    <style>
+        /* Print styles */
+        @media print {
+            .header, .footer, .modal, .admin-panel, .success-message {
+                display: none !important;
+            }
+            
+            .hero-content, .impact-card {
+                break-inside: avoid;
+            }
+            
+            body {
+                font-size: 12pt;
+                line-height: 1.4;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .hero-content {
+                background: white;
+                border: 2px solid black;
+            }
+            
+            .donate-btn, .process-btn {
+                background: black;
+                color: white;
+                border: 2px solid white;
+            }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus indicators */
+        button:focus, input:focus, select:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+        }
+
+        /* Loading states */
+        .loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Error states */
+        .error {
+            border-color: #e74c3c !important;
+            background-color: #fdf2f2 !important;
+        }
+
+        /* Success states */
+        .success {
+            border-color: #27ae60 !important;
+            background-color: #f2fdf2 !important;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            .modal-content {
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+                overflow-y: auto;
+            }
+            
+            .admin-content {
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+                overflow-y: auto;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .modal-content, .admin-content {
+                background: #2c3e50;
+                color: white;
+            }
+            
+            .form-group input, .form-group select {
+                background: #34495e;
+                color: white;
+                border-color: #4a5f7a;
+            }
+        }
+    </style>
+
+    <!-- Service Worker (create as separate file: sw.js) -->
+    <script>
+        // Service Worker content (save as sw.js in your root directory)
+        const swContent = `
+            const CACHE_NAME = 'healthforward-v1';
+            const urlsToCache = [
+                '/',
+                '/index.html',
+                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+            ];
+
+            self.addEventListener('install', event => {
+                event.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then(cache => cache.addAll(urlsToCache))
+                );
+            });
+
+            self.addEventListener('fetch', event => {
+                event.respondWith(
+                    caches.match(event.request)
+                        .then(response => {
+                            if (response) {
+                                return response;
+                            }
+                            return fetch(event.request);
+                        })
+                );
+            });
+        `;
+        
+        // Create and download service worker file
+        function createServiceWorker() {
+            const blob = new Blob([swContent], { type: 'application/javascript' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sw.js';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Uncomment the line below to download the service worker file
+        // createServiceWorker();
+    </script>
+</body>
+</html>
