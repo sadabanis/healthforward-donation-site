@@ -1,8 +1,7 @@
 // Global variables
 let selectedAmount = 50;
 let adminSettings = {
-    paypal: { email: 'sadab.anis4@gmail.com' },
-    upi: { id: 'sadab.can@ybl', qrCode: '' }
+    
 };
 
 // Load admin settings from localStorage
@@ -120,7 +119,7 @@ function processCardDonation() {
     
     // Simulate payment processing
     setTimeout(() => {
-        // In a real implementation, you would integrate with Stripe, Square, etc.
+        // In a real implementation, you would integrate with Razorpay
         console.log('Card payment processed:', {
             amount: selectedAmount,
             bankDetails: adminSettings.bank
@@ -133,24 +132,6 @@ function processCardDonation() {
         btn.innerHTML = originalText;
         btn.disabled = false;
     }, 2000);
-}
-
-function processPayPalDonation() {
-    // In a real implementation, redirect to PayPal
-    if (adminSettings.paypal.email) {
-        console.log('PayPal payment initiated:', {
-            amount: selectedAmount,
-            paypalEmail: adminSettings.paypal.email
-        });
-        
-        // Simulate PayPal redirect
-        setTimeout(() => {
-            showSuccessMessage();
-            closeDonationModal();
-        }, 1500);
-    } else {
-        alert('PayPal not configured. Please contact administrator.');
-    }
 }
 
 function processUPIDonation() {
@@ -199,7 +180,6 @@ function showAdminLogin() {
 
 function showAdminPanel() {
     // Load current settings into form
-    document.getElementById('paypalEmail').value = adminSettings.paypal.email || '';
     document.getElementById('bankName').value = adminSettings.bank.name || '';
     document.getElementById('accountNumber').value = adminSettings.bank.account || '';
     document.getElementById('routingNumber').value = adminSettings.bank.routing || '';
@@ -212,12 +192,6 @@ function showAdminPanel() {
 function closeAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
     document.body.style.overflow = 'auto';
-}
-
-function savePayPalSettings() {
-    adminSettings.paypal.email = document.getElementById('paypalEmail').value;
-    saveAdminSettings();
-    alert('PayPal settings saved successfully!');
 }
 
 function saveBankSettings() {
