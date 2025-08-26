@@ -568,4 +568,371 @@
         .success-message {
             display: none;
             position: fixed;
-            top: 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #4caf50);
+            z-index: 3000;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .success-message h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .success-message p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2500;
+            overflow-y: auto;
+        }
+
+        .admin-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .admin-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .admin-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .save-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background: #219a52;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .nav {
+                padding: 0 1rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .impact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .amount-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .payment-methods {
+                gap: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 1rem;
+            }
+
+            .hero-content {
+                padding: 1.5rem;
+            }
+
+            .amount-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                HealthForward
+            </div>
+            <button class="admin-btn" onclick="showAdminLogin()">
+                <i class="fas fa-cog"></i> Admin
+            </button>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Invest in a Healthier Tomorrow</h1>
+            <p>Your donation today paves the way for groundbreaking health initiatives, medical research, and a brighter future for generations to come. Every contribution, big or small, makes a world of difference.</p>
+            <button class="donate-btn" onclick="openDonationModal()">
+                <i class="fas fa-heart"></i> Donate Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact">
+        <h2>How Your Donation Helps</h2>
+        <div class="impact-grid">
+            <div class="impact-card">
+                <div class="impact-icon">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <h3>Medical Research</h3>
+                <p>Fund critical research for diseases like cancer and Alzheimer's. Your contribution accelerates breakthrough discoveries that save lives worldwide.</p>
+            </div>
+            <div class="impact-card">
+                <div class="impact-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                <h3>Community Health</h3>
+                <p>Provide medical supplies and care to underserved communities worldwide. Bring healthcare access to those who need it most.</p>
+            </div>
+            <div class="impact-card">
+                <div class="impact-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <h3>Future Wellness</h3>
+                <p>Develop programs for mental health and preventative care for the next generation. Invest in sustainable health solutions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donation Options -->
+    <section class="donation-options">
+        <div class="donation-container">
+            <h2>Make a Difference Today</h2>
+            <div class="amount-buttons">
+                <button class="amount-btn" onclick="selectAmount(25)">$25</button>
+                <button class="amount-btn" onclick="selectAmount(50)">$50</button>
+                <button class="amount-btn" onclick="selectAmount(100)">$100</button>
+                <button class="amount-btn" onclick="selectAmount(250)">$250</button>
+            </div>
+            <div class="custom-amount">
+                <input type="number" id="customAmount" placeholder="Other Amount ($)" min="1" onchange="selectCustomAmount()">
+            </div>
+            <button class="donate-btn" onclick="openDonationModal()">
+                <i class="fas fa-heart"></i> Donate Now
+            </button>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="trust">
+        <div class="trust-container">
+            <p>HealthForward is committed to full transparency. 95% of every donation goes directly to funding our health programs. We are a registered 501(c)(3) non-profit organization.</p>
+            <div class="payment-methods">
+                <div class="payment-icon"><i class="fab fa-cc-visa"></i></div>
+                <div class="payment-icon"><i class="fab fa-cc-mastercard"></i></div>
+                <div class="payment-icon"><i class="fab fa-cc-amex"></i></div>
+                <div class="payment-icon"><i class="fab fa-cc-paypal"></i></div>
+                <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms of Service</a>
+            <a href="#contact">Contact Us</a>
+        </div>
+        <p>© 2024 HealthForward. All rights reserved. Making the world healthier, one donation at a time.</p>
+    </footer>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDonationModal()">×</span>
+            <h2>Complete Your Donation</h2>
+            <div class="selected-amount" id="selectedAmountDisplay">
+                $50
+            </div>
+            
+            <div class="payment-tabs">
+                <button class="tab-btn active" onclick="showTab('card')">
+                    <i class="fas fa-credit-card"></i> Card
+                </button>
+                <button class="tab-btn" onclick="showTab('paypal')">
+                    <i class="fab fa-paypal"></i> PayPal
+                </button>
+                <button class="tab-btn" onclick="showTab('upi')">
+                    <i class="fas fa-mobile-alt"></i> UPI
+                </button>
+            </div>
+
+            <!-- Card Payment Tab -->
+            <div id="cardTab" class="tab-content active">
+                <form id="cardForm">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" required placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="text" required placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label>CVC</label>
+                            <input type="text" required placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" required placeholder="John Doe">
+                    </div>
+                    <button type="submit" class="process-btn">
+                        <i class="fas fa-lock"></i> Process Donation
+                    </button>
+                </form>
+            </div>
+
+            <!-- PayPal Tab -->
+            <div id="paypalTab" class="tab-content">
+                <p style="text-align: center; margin-bottom: 1rem; color: #666;">
+                    You'll be redirected to PayPal to complete your secure donation.
+                </p>
+                <button class="paypal-btn" onclick="processPayPalDonation()">
+                    <i class="fab fa-paypal"></i> Donate with PayPal
+                </button>
+            </div>
+
+            <!-- UPI Tab -->
+            <div id="upiTab" class="tab-content">
+                <div class="upi-section">
+                    <div class="form-group">
+                        <label>UPI ID</label>
+                        <input type="text" placeholder="yourname@upi" id="upiIdInput">
+                    </div>
+                    <p style="margin: 1rem 0; color: #666;">OR</p>
+                    <p style="margin-bottom: 1rem; color: #666;">Scan QR Code with any UPI app:</p>
+                    <div class="upi-qr" id="upiQrCode">
+                        <i class="fas fa-qrcode" style="font-size: 3rem;"></i>
+                    </div>
+                    <button class="process-btn" onclick="processUPIDonation()">
+                        <i class="fas fa-mobile-alt"></i> Confirm UPI Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message">
+        <div class="success-icon">
+            <i class="fas fa-heart"></i>
+        </div>
+        <h2>Thank You For Your Generous Donation!</h2>
+        <p>You have taken a vital step towards a healthier future. A receipt has been sent to your email. With gratitude, The HealthForward Team.</p>
+        <button class="donate-btn" onclick="closeSuccessMessage()" style="margin-top: 2rem;">
+            Continue
+        </button>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="admin-content">
+            <span class="close" onclick="closeAdminPanel()">×</span>
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #2c3e50;">
+                <i class="fas fa-shield-alt"></i> Admin Configuration
+            </h2>
+
+            <div class="admin-section">
+                <h3><i class="fab fa-paypal"></i> PayPal Settings</h3>
+                <div class="form-group">
+                    <label>PayPal Email Address</label>
+                    <input type="email" id="paypalEmail" placeholder="your-paypal@email.com">
+                </div>
+                <button class="save-btn" onclick="savePayPalSettings()">Save PayPal Settings</button>
+            </div>
+
+            <div class="admin-section">
+                <h3><i class="fas fa-university"></i> Bank Account Details</h3>
+                <div class="form-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="bankName" placeholder="Your Bank Name">
+                </div>
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" id="accountNumber" placeholder="Account Number">
+                
